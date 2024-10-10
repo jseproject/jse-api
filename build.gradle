@@ -37,6 +37,11 @@ javadoc {
 }
 
 publishing {
+    repositories {
+        maven {
+            url projectDir.absolutePath + '/build/repository'
+        }
+    }
     publications {
         mavenJava(MavenPublication) {
             groupId = group
