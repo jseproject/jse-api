@@ -1,2 +1,3 @@
 rootProject.name = 'jse-api'
 
+include ':library'

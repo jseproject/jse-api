@@ -1,80 +1,81 @@
-plugins {
-    id 'java-library'
-    id 'signing'
-    id 'maven-publish'
-}
+subprojects {
 
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+    apply plugin: 'java-library'
 
-group = 'io.github.jseproject'
-version = '1.0.0'
+    [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
-repositories {
-    mavenCentral()
-}
+    group = 'jseproject'
+    version = '1.1.0'
 
-dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-}
-
-test {
-    useJUnitPlatform()
-}
-
-java {
-    withSourcesJar()
-    withJavadocJar()
-}
-
-javadoc {
-    options.addStringOption("Xdoclint:none", "-quiet") // TODO cleanup JavaDocs
-    if (JavaVersion.current().isJava9Compatible()) {
-        options.addBooleanOption('html5', true)
-    }
-}
-
-publishing {
     repositories {
-        maven {
-            url projectDir.absolutePath + '/build/repository'
-        }
+        mavenCentral()
+        mavenLocal()
     }
-    publications {
-        mavenJava(MavenPublication) {
-            groupId = group
-            artifactId = rootProject.name
-            version = version
-            from components.java
-            pom {
-                name = 'JavaSound Enhancement Project API'
-                description = 'Extended API for the JavaSound subsystem of the Java Platform.'
-                url = 'https://github.com/jseproject/jse-api'
-                licenses {
-                    license {
-                        name = 'BSD 3-Clause \"New\" or \"Revised\" License'
-                        url = 'http://opensource.org/licenses/BSD-3-Clause'
-                    }
-                }
-                developers {
-                    developer {
-                        id = 'Tianscar'
-                        name = 'Naoko Mitsurugi'
-                        email = 'tianscar@protonmail.com'
-                    }
-                }
-                scm {
-                    connection = 'scm:git:git@github.com/jseproject/jse-api.git'
-                    developerConnection = 'scm:git:git@github.com/jseproject/jse-api.git'
+
+    dependencies {
+        testImplementation platform('org.junit:junit-bom:5.10.0')
+        testImplementation 'org.junit.jupiter:junit-jupiter'
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+}
+
+project(':library') {
+
+    apply plugin: 'signing'
+    apply plugin: 'maven-publish'
+
+    tasks.withType(Javadoc).configureEach { enabled = false }
+
+    java {
+        withJavadocJar()
+        withSourcesJar()
+    }
+
+    publishing {
+        repositories {
+            maven {
+                url projectDir.absolutePath + '/build/repository'
+            }
+        }
+        publications {
+            mavenJava(MavenPublication) {
+                groupId = 'io.github.jseproject'
+                artifactId = 'jse-api'
+                version = version
+                from components.java
+                pom {
+                    name = 'JavaSound Enhancement API'
+                    description = 'Extended API for the JavaSound subsystem of the Java Platform.'
                     url = 'https://github.com/jseproject/jse-api'
+                    licenses {
+                        license {
+                            name = 'BSD 3-Clause \"New\" or \"Revised\" License'
+                            url = 'http://opensource.org/licenses/BSD-3-Clause'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'Tianscar'
+                            name = 'Naoko Mitsurugi'
+                            email = 'tianscar@protonmail.com'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:git@github.com/jseproject/jse-api.git'
+                        developerConnection = 'scm:git:git@github.com/jseproject/jse-api.git'
+                        url = 'https://github.com/jseproject/jse-api'
+                    }
                 }
             }
         }
     }
-}
 
-signing {
-    sign publishing.publications.mavenJava
+    signing {
+        sign(publishing.publications.mavenJava)
+    }
+
 }
